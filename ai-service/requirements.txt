@@ -10,3 +10,4 @@ requests
 python-multipart
 google-generativeai
 tiktoken
+langchain_text_splitters
