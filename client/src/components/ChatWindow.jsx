@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User, FileText, Code, Sparkles, Loader2 } from 'lucide-react';
 import { chatService } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const ChatWindow = ({ selectedRepo, onViewSource, activeSourceId }) => {
   const [messages, setMessages] = useState([]);
@@ -94,12 +98,58 @@ const ChatWindow = ({ selectedRepo, onViewSource, activeSourceId }) => {
               </div>
               
               <div className={`max-w-[80%] space-y-3 ${msg.role === 'user' ? 'items-end flex flex-col' : ''}`}>
-                <div className={`p-4 rounded-2xl ${
+                <div className={`p-4 rounded-2xl overflow-hidden ${
                   msg.role === 'user' 
                   ? 'bg-secondary/10 border border-secondary/20 text-white rounded-tr-none' 
                   : 'bg-white/5 border border-white/10 text-gray-200 rounded-tl-none leading-relaxed'
                 }`}>
-                  <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                  {msg.role === 'user' ? (
+                    <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                  ) : (
+                    <div className="text-sm">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({node, inline, className, children, ...props}) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return !inline ? (
+                              <div className="my-3 overflow-hidden rounded-lg border border-white/10">
+                                <div className="flex items-center px-4 py-2 bg-black/40 border-b border-white/10 text-xs text-gray-400">
+                                  <span>{match?.[1] || 'code'}</span>
+                                </div>
+                                <SyntaxHighlighter
+                                  {...props}
+                                  children={String(children).replace(/\n$/, '')}
+                                  style={vscDarkPlus}
+                                  language={match?.[1] || 'javascript'}
+                                  PreTag="div"
+                                  customStyle={{ margin: 0, padding: '1rem', background: '#1e1e1e', fontSize: '13px' }}
+                                />
+                              </div>
+                            ) : (
+                              <code {...props} className="bg-black/30 rounded px-1.5 py-0.5 font-mono text-[13px] text-accent">
+                                {children}
+                              </code>
+                            );
+                          },
+                          p: ({children}) => <p className="mb-3 last:mb-0 leading-relaxed">{children}</p>,
+                          ul: ({children}) => <ul className="list-disc ml-5 mb-3 space-y-1">{children}</ul>,
+                          ol: ({children}) => <ol className="list-decimal ml-5 mb-3 space-y-1">{children}</ol>,
+                          li: ({children}) => <li className="pl-1">{children}</li>,
+                          a: ({href, children}) => <a href={href} target="_blank" rel="noreferrer" className="text-secondary hover:underline transition-colors">{children}</a>,
+                          h1: ({children}) => <h1 className="text-xl font-bold mb-3 mt-5 text-white">{children}</h1>,
+                          h2: ({children}) => <h2 className="text-lg font-bold mb-3 mt-4 text-white">{children}</h2>,
+                          h3: ({children}) => <h3 className="text-base font-bold mb-2 mt-4 text-white">{children}</h3>,
+                          blockquote: ({children}) => <blockquote className="border-l-4 border-primary/50 pl-4 py-1 my-3 bg-white/5 rounded-r-lg">{children}</blockquote>,
+                          table: ({children}) => <div className="overflow-x-auto my-3"><table className="w-full text-left border-collapse border border-white/10">{children}</table></div>,
+                          th: ({children}) => <th className="border border-white/10 px-4 py-2 bg-black/20 font-bold">{children}</th>,
+                          td: ({children}) => <td className="border border-white/10 px-4 py-2">{children}</td>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
 
                 {msg.sources && msg.sources.length > 0 && (
