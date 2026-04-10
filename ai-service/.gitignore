@@ -10,6 +10,7 @@ lerna-debug.log*
 .env.local
 node_modules
 temp_repos
+chroma_db
 dist
 dist-ssr
 *.local
