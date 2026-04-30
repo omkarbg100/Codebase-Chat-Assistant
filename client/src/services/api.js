@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// In Docker: Nginx proxies /api → server container (no host needed)
+// In local dev: set VITE_API_BASE_URL=http://localhost:5000/api in client/.env.local
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
 });
 
 // Add auth token to requests

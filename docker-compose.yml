@@ -1,0 +1,79 @@
+name: codebase-chat-assistant
+
+services:
+
+  # ─────────────────────────────────────────
+  # Python / FastAPI AI Service
+  # Host port 8400 → Container port 8400
+  # ─────────────────────────────────────────
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: cca-ai-service
+    restart: unless-stopped
+    ports:
+      - "8400:8400"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      # Persist ChromaDB vector store and cloned repos across restarts
+      - ai_chroma_db:/app/chroma_db
+      - ai_temp_repos:/app/temp_repos
+    networks:
+      - cca-network
+
+  # ─────────────────────────────────────────
+  # Node.js / Express Backend Server
+  # Host port 5000 → Container port 5000
+  # ─────────────────────────────────────────
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: cca-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      # Point to the ai-service container via Docker's internal DNS
+      - AI_SERVICE_URL=http://ai-service:8400
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - ai-service
+    networks:
+      - cca-network
+
+  # ─────────────────────────────────────────
+  # React / Vite Frontend (served by Nginx)
+  # Host port 3000 → Container port 80
+  # ─────────────────────────────────────────
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: cca-client
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    networks:
+      - cca-network
+
+# ─────────────────────────────────────────
+# Named Volumes
+# ─────────────────────────────────────────
+volumes:
+  ai_chroma_db:
+  ai_temp_repos:
+
+# ─────────────────────────────────────────
+# Internal Network
+# ─────────────────────────────────────────
+networks:
+  cca-network:
+    driver: bridge
