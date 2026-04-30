@@ -345,9 +345,3 @@ npm run dev
 5. Open a Pull Request
 
 ---
-
-<div align="center">
-
-Made with ❤️ using React, Node.js, Python & Gemini
-
-</div>
