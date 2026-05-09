@@ -1,11 +1,15 @@
+# pyrefly: ignore [missing-import]
 from fastapi import FastAPI, HTTPException
+# pyrefly: ignore [missing-import]
 from pydantic import BaseModel
 import os
+# pyrefly: ignore [missing-import]
 import uvicorn
 from repo_loader import clone_repo, get_repo_files, cleanup_repo
 from chunker import chunk_code
 from vector_store import create_vector_store, get_vector_store
 from rag_pipeline import get_rag_chain
+# pyrefly: ignore [missing-import]
 from langchain_core.messages import HumanMessage, AIMessage
 
 app = FastAPI(title="Codebase Chat AI Service")

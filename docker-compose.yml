@@ -16,10 +16,27 @@ services:
       - "8400:8400"
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - CHROMA_HOST=chromadb
+    depends_on:
+      - chromadb
     volumes:
-      # Persist ChromaDB vector store and cloned repos across restarts
-      - ai_chroma_db:/app/chroma_db
+      # Persist cloned repos across restarts (chroma moved to separate container)
       - ai_temp_repos:/app/temp_repos
+    networks:
+      - cca-network
+
+  # ─────────────────────────────────────────
+  # Standalone ChromaDB Server
+  # Host port 8000 → Container port 8000
+  # ─────────────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: cca-chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ai_chroma_db:/chroma/chroma
     networks:
       - cca-network
 
