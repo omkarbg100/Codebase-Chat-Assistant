@@ -181,6 +181,30 @@ docker compose down -v
 docker compose up --build server
 ```
 
+## 🚀 CI/CD Pipeline (GitHub Actions)
+
+A minimal CI/CD pipeline lives in `.github/workflows/deploy.yml`. It runs on every push to `main` and performs two jobs:
+
+- **Build** – builds Docker images for the client, server, and AI service and pushes them to Docker Hub with two tags: `:latest` and `:<commit‑sha>`.
+- **Deploy** – SSHs into the target VM, writes a `.env` file from repository secrets, pulls the exact images for the new commit, and brings the stack up with `docker compose up -d --remove-orphans`.
+
+The workflow expects the following GitHub secrets to be defined in your repository settings:
+
+- `DOCKERHUB_USERNAME` – Docker Hub account name
+- `DOCKERHUB_TOKEN` – Docker Hub access token
+- `SSH_PRIVATE_KEY` – Private SSH key for the VM user
+- `VM_HOST` – VM IP address
+- `VM_USER` – SSH user (e.g., `root`)
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `GOOGLE_API_KEY`
+
+The CI/CD workflow does **not** run on pull‑request events for security – it only builds images. Deployment only happens on pushes to the `main` branch.
+
+You can view the full workflow file at [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+
+---
+
 ---
 
 ## 💻 Local Development (No Docker)
