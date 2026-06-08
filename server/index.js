@@ -15,6 +15,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+
+console.log("Backend server is running");
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
