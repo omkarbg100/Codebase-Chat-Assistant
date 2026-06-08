@@ -7,8 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: DOCKERHUB_USERNAME
-    
+    environment: Production
+
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
