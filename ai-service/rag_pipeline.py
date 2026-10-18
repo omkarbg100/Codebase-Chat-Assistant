@@ -11,6 +11,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 def get_rag_chain(vector_store):
+    #hint: This function creates a custom RAG chain using LCEL and Google Generative AI.
     """Creates a custom RAG chain using LCEL.
     Relies only on 'langchain_core' and 'langchain_google_genai'.
     """
