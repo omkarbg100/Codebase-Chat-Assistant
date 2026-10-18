@@ -88,4 +88,11 @@ async def ask_endpoint(request: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8400)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8400,
+        reload=True,
+        reload_excludes=["temp_repos/*", "chroma_db/*"]
+    )
+

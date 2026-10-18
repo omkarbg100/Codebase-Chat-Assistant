@@ -1,15 +1,14 @@
 import os
-# pyrefly: ignore [missing-import]
 import chromadb
-# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
 
-# Use chromadb container name as host when in docker network
-CHROMA_HOST = os.getenv("CHROMA_HOST", "chromadb")
+CHROMA_DB_DIR = "chroma_db"
+# Only set CHROMA_HOST if explicitly provided in environment (e.g., in Docker)
+CHROMA_HOST = os.getenv("CHROMA_HOST")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", 8000))
 
 # 🔥 Load embedding model ONCE (performance optimization)
@@ -21,7 +20,9 @@ def get_embeddings():
     return embedding_model
 
 def get_chroma_client():
-    return chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+    if CHROMA_HOST:
+        return chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+    return None
 
 def get_vector_store(repo_id: str = None):
     try:
@@ -30,18 +31,31 @@ def get_vector_store(repo_id: str = None):
 
         client = get_chroma_client()
         
-        try:
-            # Try to fetch the collection. It throws an error if it doesn't exist
-            client.get_collection(name=repo_id)
-            print(f"📂 Loading existing vector DB collection for repo: {repo_id}")
+        # 1. Server mode (Docker)
+        if client:
+            try:
+                client.get_collection(name=repo_id)
+                print(f"📂 Loading existing vector DB collection from Chroma server for repo: {repo_id}")
+                return Chroma(
+                    client=client,
+                    collection_name=repo_id,
+                    embedding_function=get_embeddings()
+                )
+            except Exception:
+                print("⚠️ No existing vector store collection found on Chroma server.")
+                return None
+        
+        # 2. Local folder mode (Local Development)
+        persist_dir = os.path.join(CHROMA_DB_DIR, repo_id)
+        if os.path.exists(persist_dir):
+            print(f"📂 Loading existing local vector DB for repo: {repo_id}")
             return Chroma(
-                client=client,
-                collection_name=repo_id,
+                persist_directory=persist_dir,
                 embedding_function=get_embeddings()
             )
-        except Exception:
-            print("⚠️ No existing vector store collection found.")
-            return None
+
+        print("⚠️ No existing local vector store found.")
+        return None
 
     except Exception as e:
         print(f"❌ Error loading vector store: {e}")
@@ -55,10 +69,13 @@ def create_vector_store(chunks, repo_id: str):
     texts = [c["page_content"] for c in chunks]
     metadatas = [c.get("metadata", {}) for c in chunks]
 
-    print(f"🚀 Creating vector store collection for repo: {repo_id}")
+    print(f"🚀 Creating vector store for repo: {repo_id}")
     print(f"📊 Total chunks: {len(texts)}")
 
     client = get_chroma_client()
+    persist_dir = os.path.join(CHROMA_DB_DIR, repo_id) if not client else None
+    if persist_dir:
+        os.makedirs(persist_dir, exist_ok=True)
 
     # 🔥 Batch processing (important for large repos)
     batch_size = 100
@@ -71,13 +88,21 @@ def create_vector_store(chunks, repo_id: str):
         print(f"⚡ Processing batch {i//batch_size + 1}")
 
         if vector_store is None:
-            vector_store = Chroma.from_texts(
-                texts=batch_texts,
-                embedding=get_embeddings(),
-                metadatas=batch_meta,
-                client=client,
-                collection_name=repo_id
-            )
+            if client:
+                vector_store = Chroma.from_texts(
+                    texts=batch_texts,
+                    embedding=get_embeddings(),
+                    metadatas=batch_meta,
+                    client=client,
+                    collection_name=repo_id
+                )
+            else:
+                vector_store = Chroma.from_texts(
+                    texts=batch_texts,
+                    embedding=get_embeddings(),
+                    metadatas=batch_meta,
+                    persist_directory=persist_dir
+                )
         else:
             vector_store.add_texts(
                 texts=batch_texts,
@@ -85,5 +110,4 @@ def create_vector_store(chunks, repo_id: str):
             )
     
     print("✅ Vector store created successfully!")
-
     return vector_store

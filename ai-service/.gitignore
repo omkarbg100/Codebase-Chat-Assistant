@@ -9,10 +9,17 @@ lerna-debug.log*
 .env
 .env.local
 node_modules
-temp_repos
-chroma_db
-dist
-dist-ssr
+temp_repos/
+chroma_db/
+.temp_repos/
+.chroma_db/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+dist/
+dist-ssr/
 *.local
 
 # Editor directories and files
