@@ -14,3 +14,6 @@ langchain_text_splitters
 langchain_chroma
 langchain_huggingface
 sentence-transformers
+rank-bm25
+pytest
+litellm

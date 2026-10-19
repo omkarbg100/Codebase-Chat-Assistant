@@ -33,11 +33,11 @@ COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy source code
-COPY chunker.py .
+COPY app/ ./app/
 COPY main.py .
-COPY rag_pipeline.py .
-COPY repo_loader.py .
-COPY vector_store.py .
+
+
+
 
 # Directories that are created at runtime
 RUN mkdir -p /app/temp_repos
