@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Code2, Loader2, Mail, Lock, User as UserIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { authService } from '../services/api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Code2, Loader2, Mail, Lock, User as UserIcon, Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -18,106 +20,211 @@ const Login = () => {
     setError('');
     try {
       if (isRegister) {
-        // Simplified register logic for brevity
-        await fetch('http://localhost:5000/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
+        await authService.register(formData);
       }
       await login({ email: formData.email, password: formData.password });
       navigate('/dashboard');
     } catch (err) {
-      console.log(err)
-      setError(err.response?.data?.message || 'Authentication failed');
+      setError(err.response?.data?.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative">
-      {/* Blobs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-secondary/10 rounded-full blur-[100px]" />
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md glass p-10 rounded-3xl relative z-10"
-      >
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-primary to-accent rounded-xl shadow-lg shadow-primary/20 mb-4">
-            <Code2 className="text-white w-7 h-7" />
-          </div>
-          <h2 className="text-3xl font-bold mb-2">{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
-          <p className="text-gray-400 text-sm">
-            {isRegister ? 'Join the future of code analysis' : 'Sign in to access your repositories'}
-          </p>
-        </div>
+      {/* Nav bar */}
+      <nav style={{ padding: '16px 32px', borderBottom: '2px solid rgba(255,255,255,0.06)' }}>
+        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+          <ArrowLeft size={14} color="#7878a0" strokeWidth={2.5} />
+          <span style={{ fontSize: 12, color: '#7878a0', fontWeight: 600, letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
+            Back to Home
+          </span>
+        </Link>
+      </nav>
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-xl text-sm mb-6">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {isRegister && (
-            <div className="relative">
-              <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-              <input
-                type="text"
-                placeholder="Username"
-                className="input-field pl-12"
-                required
-                value={formData.username}
-                onChange={e => setFormData({ ...formData, username: e.target.value })}
-              />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+        <motion.div
+          key={isRegister ? 'register' : 'login'}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          style={{ width: '100%', maxWidth: 420 }}
+        >
+          {/* Card */}
+          <div style={{
+            background: 'var(--surface)',
+            border: '3px solid rgba(255,255,255,0.10)',
+            boxShadow: '8px 8px 0 var(--accent)',
+          }}>
+            {/* Header */}
+            <div style={{
+              background: 'var(--accent)',
+              borderBottom: '3px solid rgba(0,0,0,0.15)',
+              padding: '24px 28px 20px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                <div style={{
+                  width: 34, height: 34,
+                  background: 'var(--ink)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Code2 size={17} color="var(--accent)" strokeWidth={2.8} />
+                </div>
+                <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
+                  Codebase<span style={{ color: 'var(--violet)' }}>Chat</span>
+                </span>
+              </div>
+              <h1 style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 26, fontWeight: 800,
+                letterSpacing: '-0.04em', lineHeight: 1.1,
+                color: 'var(--ink)', margin: 0,
+              }}>
+                {isRegister ? 'Create Account' : 'Welcome Back'}
+              </h1>
+              <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginTop: 6 }}>
+                {isRegister ? 'Start exploring any GitHub repo with AI.' : 'Sign in to access your indexed repositories.'}
+              </p>
             </div>
-          )}
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <input
-              type="email"
-              placeholder="Email address"
-              className="input-field pl-12"
-              required
-              value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
-            />
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <input
-              type="password"
-              placeholder="Password"
-              className="input-field pl-12"
-              required
-              value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value })}
-            />
+
+            <div style={{ padding: '28px' }}>
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 10,
+                      background: 'rgba(255,92,77,0.10)',
+                      border: '2px solid rgba(255,92,77,0.30)',
+                      padding: '12px 14px',
+                      marginBottom: 20,
+                      fontSize: 13, color: 'var(--coral)',
+                    }}
+                  >
+                    <AlertCircle size={15} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 1 }} />
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {isRegister && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                      Username
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <UserIcon size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                      <input
+                        id="username"
+                        type="text"
+                        className="input"
+                        placeholder="your_username"
+                        required
+                        value={formData.username}
+                        onChange={e => updateField('username', e.target.value)}
+                        style={{ paddingLeft: 42 }}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                    Email Address
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <input
+                      id="email"
+                      type="email"
+                      className="input"
+                      placeholder="you@example.com"
+                      required
+                      value={formData.email}
+                      onChange={e => updateField('email', e.target.value)}
+                      style={{ paddingLeft: 42 }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                    Password
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      className="input"
+                      placeholder="••••••••"
+                      required
+                      value={formData.password}
+                      onChange={e => updateField('password', e.target.value)}
+                      style={{ paddingLeft: 42, paddingRight: 46 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(v => !v)}
+                      style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#505068', padding: 4 }}
+                    >
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  id="auth-submit-btn"
+                  type="submit"
+                  disabled={loading}
+                  className="btn btn-primary"
+                  style={{
+                    width: '100%', justifyContent: 'center',
+                    marginTop: 6,
+                    opacity: loading ? 0.7 : 1,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {loading
+                    ? <><Loader2 size={15} className="animate-spin" /> Processing...</>
+                    : (isRegister ? 'Create Account' : 'Sign In')}
+                </button>
+              </form>
+
+              <div style={{
+                marginTop: 22,
+                paddingTop: 18,
+                borderTop: '2px solid rgba(255,255,255,0.06)',
+                textAlign: 'center',
+                fontSize: 13, color: '#5a5a78',
+              }}>
+                {isRegister ? 'Already have an account? ' : "Don't have an account? "}
+                <button
+                  onClick={() => { setIsRegister(v => !v); setError(''); }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', fontWeight: 700, fontSize: 13, fontFamily: 'var(--font-sans)', textDecoration: 'underline', textDecorationThickness: 2, textUnderlineOffset: 3, padding: 0 }}
+                >
+                  {isRegister ? 'Sign In' : 'Create One'}
+                </button>
+              </div>
+            </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full btn-primary h-12 flex items-center justify-center gap-2"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isRegister ? 'Register' : 'Login')}
-          </button>
-        </form>
-
-        <p className="mt-8 text-center text-gray-500 text-sm">
-          {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button
-            onClick={() => setIsRegister(!isRegister)}
-            className="text-primary font-semibold hover:underline"
-          >
-            {isRegister ? 'Sign In' : 'Create One'}
-          </button>
-        </p>
-      </motion.div>
+          <p style={{ textAlign: 'center', marginTop: 20, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: '#44445a', textTransform: 'uppercase' }}>
+            Secured · JWT Auth · No data shared
+          </p>
+        </motion.div>
+      </div>
     </div>
   );
 };

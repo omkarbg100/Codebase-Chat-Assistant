@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import SourceViewer from '../components/SourceViewer';
 import { repoService } from '../services/api';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 
 const Dashboard = () => {
   const [repos, setRepos] = useState([]);
@@ -25,36 +27,57 @@ const Dashboard = () => {
     fetchRepos();
   }, [refreshTrigger]);
 
-  const handleRepoAdded = () => {
-      setRefreshTrigger(prev => prev + 1);
-  };
+  const handleRepoAdded = () => setRefreshTrigger(prev => prev + 1);
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      <Sidebar 
-        repos={repos} 
-        selectedRepo={selectedRepo} 
-        onSelect={setSelectedRepo} 
+    <div style={{
+      display: 'flex', height: '100vh',
+      background: 'var(--bg)',
+      overflow: 'hidden',
+      fontFamily: 'var(--font-sans)',
+    }}>
+      {/* Sidebar */}
+      <Sidebar
+        repos={repos}
+        selectedRepo={selectedRepo}
+        onSelect={(repo) => { setSelectedRepo(repo); setActiveSource(null); }}
         onRepoAdded={handleRepoAdded}
       />
-      
-      <div className="flex-1 flex overflow-hidden">
-        <div className={`flex-1 transition-all duration-500 ${activeSource ? 'w-1/2' : 'w-full'}`}>
-          <ChatWindow 
-            selectedRepo={selectedRepo} 
-            onViewSource={setActiveSource} 
+
+      {/* Main Content */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+        {/* Chat */}
+        <div style={{
+          flex: activeSource ? '0 0 55%' : '1',
+          overflow: 'hidden',
+          transition: 'flex 0.3s ease',
+          borderRight: activeSource ? '3px solid rgba(255,255,255,0.07)' : 'none',
+        }}>
+          <ChatWindow
+            selectedRepo={selectedRepo}
+            onViewSource={setActiveSource}
             activeSourceId={activeSource?.file_path}
           />
         </div>
-        
-        {activeSource && (
-          <div className="w-1/2 border-l border-white/10 bg-surface/50 overflow-hidden">
-            <SourceViewer 
-              source={activeSource} 
-              onClose={() => setActiveSource(null)} 
-            />
-          </div>
-        )}
+
+        {/* Source Viewer panel */}
+        <AnimatePresence>
+          {activeSource && (
+            <motion.div
+              key="source-panel"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: '45%', opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              style={{ overflow: 'hidden', flexShrink: 0 }}
+            >
+              <SourceViewer
+                source={activeSource}
+                onClose={() => setActiveSource(null)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

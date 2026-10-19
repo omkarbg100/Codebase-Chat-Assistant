@@ -17,12 +17,18 @@ services:
       - "8400:8400"
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - LLM_PROVIDER=${LLM_PROVIDER:-gemini}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini/gemini-2.5-flash}
+      - GROQ_MODEL=${GROQ_MODEL:-groq/llama-3.3-70b-versatile}
       - CHROMA_HOST=chromadb
     depends_on:
       - chromadb
     volumes:
       # Persist cloned repos across restarts (chroma moved to separate container)
       - ai_temp_repos:/app/temp_repos
+      # Persist BM25 sparse keyword indices across restarts
+      - ai_bm25_indices:/app/chroma_db
     networks:
       - cca-network
 
@@ -90,6 +96,7 @@ services:
 volumes:
   ai_chroma_db:
   ai_temp_repos:
+  ai_bm25_indices:
 
 # ─────────────────────────────────────────
 # Internal Network
