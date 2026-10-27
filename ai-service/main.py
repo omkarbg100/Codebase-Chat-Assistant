@@ -2,6 +2,7 @@ import sys
 import uvicorn
 from app.main import app
 
+# updated
 # Configure UTF-8 safe output for Windows terminals
 if sys.platform == "win32":
     try:
