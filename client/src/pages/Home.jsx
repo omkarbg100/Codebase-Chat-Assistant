@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, GitBranch, Zap, MessageSquare, Code2, Search, Shield, RefreshCw, ChevronRight } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 const TICKER_ITEMS = [
   'Hybrid BM25 + Dense Search',
@@ -67,16 +68,17 @@ const fadeUp = (delay = 0) => ({
 
 const Home = () => {
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100vh', color: '#e2e2ef' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh', color: 'var(--text-primary)', transition: 'background-color 0.2s ease, color 0.2s ease' }}>
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <nav style={{
-        borderBottom: '3px solid rgba(255,255,255,0.08)',
+        borderBottom: '3px solid var(--border)',
         position: 'sticky',
         top: 0,
         zIndex: 40,
         backdropFilter: 'blur(20px)',
-        background: 'rgba(13,13,18,0.85)',
+        background: 'var(--nav-bg)',
+        transition: 'background-color 0.2s ease, border-color 0.2s ease',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -85,26 +87,28 @@ const Home = () => {
               background: 'var(--accent)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: '3px solid var(--ink)',
-              boxShadow: '3px 3px 0 rgba(255,255,255,0.1)',
+              boxShadow: '3px 3px 0 var(--border-strong)',
             }}>
-              <Code2 size={18} color="var(--ink)" strokeWidth={2.8} />
+              <Code2 size={18} color="var(--accent-fg)" strokeWidth={2.8} />
             </div>
-            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', fontFamily: 'var(--font-sans)' }}>
+            <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', fontFamily: 'var(--font-sans)', color: 'var(--text-primary)' }}>
               Codebase<span style={{ color: 'var(--accent)' }}>Chat</span>
             </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <ThemeToggle variant="pill" id="home-nav-theme-toggle" />
             <a
               href="https://github.com/omkarbg100/codebase-chat-assistant"
               target="_blank"
               rel="noreferrer"
               style={{
                 fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: '#8888aa', textDecoration: 'none', transition: 'color 0.15s',
-                display: 'none',
+                color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.15s',
               }}
               className="hidden-sm"
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
             >
               GitHub
             </a>
@@ -124,10 +128,10 @@ const Home = () => {
               whiteSpace: 'nowrap', padding: '0 28px',
               fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
               letterSpacing: '0.18em', textTransform: 'uppercase',
-              color: 'var(--ink)',
+              color: 'var(--accent-fg)',
             }}>
               {item}
-              <span style={{ fontSize: 6, color: 'var(--ink)', opacity: 0.5 }}>◆</span>
+              <span style={{ fontSize: 6, opacity: 0.5 }}>◆</span>
             </span>
           ))}
         </div>
@@ -140,10 +144,10 @@ const Home = () => {
           {/* Left */}
           <div>
             <motion.div {...fadeUp(0)} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 28 }}>
-              <span className="badge" style={{ color: 'var(--accent)', borderColor: 'var(--accent)', background: 'rgba(56,189,248,0.10)' }}>
+              <span className="badge" style={{ color: 'var(--accent)', borderColor: 'var(--accent)', background: 'rgba(var(--accent-rgb), 0.10)' }}>
                 ⚡ Hybrid RAG
               </span>
-              <span className="badge" style={{ color: 'var(--mint)', borderColor: 'var(--mint)', background: 'rgba(52,211,153,0.08)' }}>
+              <span className="badge" style={{ color: 'var(--mint)', borderColor: 'var(--mint)', background: 'rgba(52,211,153,0.10)' }}>
                 🤖 LiteLLM Gateway
               </span>
             </motion.div>
@@ -156,15 +160,16 @@ const Home = () => {
               letterSpacing: '-0.04em',
               marginBottom: 28,
               margin: '0 0 28px',
+              color: 'var(--text-primary)',
             }}>
               Talk to<br />
               <span style={{
                 display: 'inline-block',
                 background: 'var(--accent)',
-                color: 'var(--ink)',
+                color: 'var(--accent-fg)',
                 padding: '2px 16px',
                 border: '3px solid var(--ink)',
-                boxShadow: '6px 6px 0 rgba(255,255,255,0.08)',
+                boxShadow: '6px 6px 0 var(--border-strong)',
               }}>
                 any repo
               </span>
@@ -172,7 +177,7 @@ const Home = () => {
               <span style={{ color: 'var(--coral)' }}>instantly.</span>
             </motion.h1>
 
-            <motion.p {...fadeUp(0.15)} style={{ color: '#8888aa', fontSize: 17, lineHeight: 1.65, maxWidth: 480, margin: '24px 0 36px' }}>
+            <motion.p {...fadeUp(0.15)} style={{ color: 'var(--text-secondary)', fontSize: 17, lineHeight: 1.65, maxWidth: 480, margin: '24px 0 36px' }}>
               Paste a GitHub URL. Ask questions in plain English. Get answers with exact file and line citations — powered by Hybrid Search and multi-provider AI.
             </motion.p>
 
@@ -200,14 +205,14 @@ const Home = () => {
             style={{ position: 'relative' }}
           >
             <div style={{
-              border: '3px solid rgba(255,255,255,0.12)',
+              border: '3px solid var(--border-strong)',
               background: 'var(--surface)',
               boxShadow: '8px 8px 0 var(--accent)',
             }}>
               {/* Terminal bar */}
               <div style={{
                 background: 'var(--surface-2)',
-                borderBottom: '2px solid rgba(255,255,255,0.08)',
+                borderBottom: '2px solid var(--border)',
                 padding: '10px 14px',
                 display: 'flex',
                 alignItems: 'center',
@@ -215,10 +220,10 @@ const Home = () => {
               }}>
                 <div style={{ display: 'flex', gap: 7 }}>
                   {['var(--coral)', 'var(--accent)', 'var(--mint)'].map((c, i) => (
-                    <div key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c, border: '2px solid rgba(0,0,0,0.3)' }} />
+                    <div key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c, border: '2px solid rgba(0,0,0,0.2)' }} />
                   ))}
                 </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#555570', letterSpacing: '0.12em' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-subtle)', letterSpacing: '0.12em' }}>
                   facebook/react
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -238,7 +243,7 @@ const Home = () => {
                     maxWidth: '78%',
                     fontSize: 13,
                     lineHeight: 1.5,
-                    color: '#d0cef0',
+                    color: 'var(--text-primary)',
                   }}>
                     How does the reconciliation algorithm work?
                   </div>
@@ -247,26 +252,26 @@ const Home = () => {
                 <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
                   <div style={{
                     width: 28, height: 28, flexShrink: 0,
-                    background: 'rgba(56,189,248,0.15)',
-                    border: '2px solid rgba(56,189,248,0.3)',
+                    background: 'rgba(var(--accent-rgb), 0.15)',
+                    border: '2px solid rgba(var(--accent-rgb), 0.3)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 11,
                   }}>AI</div>
                   <div style={{
                     background: 'var(--surface-2)',
-                    border: '2px solid rgba(255,255,255,0.06)',
+                    border: '2px solid var(--border)',
                     padding: '10px 14px',
                     fontSize: 13,
                     lineHeight: 1.6,
-                    color: '#c8c8e0',
+                    color: 'var(--text-primary)',
                     flex: 1,
                   }}>
                     React's reconciler uses a <strong style={{ color: 'var(--accent)' }}>diffing algorithm</strong> based on two heuristics — same element type and stable keys...
                     <div style={{
                       marginTop: 10, padding: '8px 12px',
-                      background: '#0d0d12',
-                      border: '2px solid rgba(255,255,255,0.06)',
-                      fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6688aa',
+                      background: 'var(--bg)',
+                      border: '2px solid var(--border)',
+                      fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-secondary)',
                     }}>
                       // packages/react-reconciler/src/ReactChildFiber.js
                     </div>
@@ -278,8 +283,8 @@ const Home = () => {
                     <span key={i} style={{
                       fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
                       padding: '4px 10px',
-                      background: 'rgba(56,189,248,0.12)',
-                      border: '2px solid rgba(56,189,248,0.28)',
+                      background: 'rgba(var(--accent-rgb), 0.12)',
+                      border: '2px solid rgba(var(--accent-rgb), 0.28)',
                       color: 'var(--accent)',
                       letterSpacing: '0.05em',
                     }}>
@@ -318,21 +323,22 @@ const Home = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            border: '3px solid rgba(255,255,255,0.10)',
+            border: '3px solid var(--border-strong)',
             boxShadow: '6px 6px 0 var(--accent)',
+            background: 'var(--surface)',
           }}
         >
           {STATS.map((stat, i) => (
             <div key={i} style={{
               padding: '32px',
-              borderRight: i < STATS.length - 1 ? '3px solid rgba(255,255,255,0.08)' : 'none',
+              borderRight: i < STATS.length - 1 ? '3px solid var(--border)' : 'none',
               transition: 'background 0.15s',
             }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 52, fontWeight: 700, lineHeight: 1, color: 'var(--accent)', letterSpacing: '-0.03em' }}>
                 {stat.value}
               </div>
-              <div style={{ fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.10em', marginTop: 8 }}>{stat.label}</div>
-              <div style={{ fontSize: 12, color: '#666680', marginTop: 4 }}>{stat.sublabel}</div>
+              <div style={{ fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.10em', marginTop: 8, color: 'var(--text-primary)' }}>{stat.label}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{stat.sublabel}</div>
             </div>
           ))}
         </motion.div>
@@ -348,7 +354,7 @@ const Home = () => {
           style={{ marginBottom: 48 }}
         >
           <p className="section-label" style={{ marginBottom: 12 }}>⚙ What's Inside</p>
-          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2rem, 5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2rem, 5vw, 3.2rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, margin: 0, color: 'var(--text-primary)' }}>
             Built for developers,<br />by developers.
           </h2>
         </motion.div>
@@ -366,21 +372,21 @@ const Home = () => {
             >
               <div style={{
                 width: 44, height: 44, marginBottom: 16,
-                background: `${feat.color}18`,
-                border: `2px solid ${feat.color}40`,
+                background: `rgba(var(--accent-rgb), 0.12)`,
+                border: `2px solid var(--accent)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <feat.icon size={20} color={feat.color} strokeWidth={2.3} />
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', marginBottom: 8, margin: '0 0 10px' }}>{feat.label}</h3>
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: '#7878a0', margin: 0 }}>{feat.desc}</p>
+              <h3 style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.01em', marginBottom: 8, margin: '0 0 10px', color: 'var(--text-primary)' }}>{feat.label}</h3>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: 'var(--text-secondary)', margin: 0 }}>{feat.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* ── How it Works ────────────────────────────────────── */}
-      <section style={{ borderTop: '3px solid rgba(255,255,255,0.06)', borderBottom: '3px solid rgba(255,255,255,0.06)', padding: '72px 32px', background: 'var(--surface)' }}>
+      <section style={{ borderTop: '3px solid var(--border)', borderBottom: '3px solid var(--border)', padding: '72px 32px', background: 'var(--surface)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -389,7 +395,7 @@ const Home = () => {
             style={{ marginBottom: 48 }}
           >
             <p className="section-label" style={{ marginBottom: 12 }}>⚡ How It Works</p>
-            <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1, margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1, margin: 0, color: 'var(--text-primary)' }}>
               Three steps to understanding<br />
               <span style={{ color: 'var(--accent)' }}>any codebase.</span>
             </h2>
@@ -409,8 +415,8 @@ const Home = () => {
                 transition={{ delay: i * 0.1, duration: 0.45 }}
                 style={{
                   padding: '36px 28px',
-                  border: '3px solid rgba(255,255,255,0.08)',
-                  borderRight: i < 2 ? 'none' : '3px solid rgba(255,255,255,0.08)',
+                  border: '3px solid var(--border)',
+                  borderRight: i < 2 ? 'none' : '3px solid var(--border)',
                   transition: 'background 0.15s',
                   background: 'var(--bg)',
                   cursor: 'default',
@@ -420,13 +426,13 @@ const Home = () => {
                 <div style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: 52, fontWeight: 700, lineHeight: 1,
-                  color: 'rgba(56,189,248,0.22)',
+                  color: 'rgba(var(--accent-rgb), 0.25)',
                   marginBottom: 24, letterSpacing: '-0.03em',
                 }}>
                   {step.num}
                 </div>
-                <h3 style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.02em', margin: '0 0 12px' }}>{step.title}</h3>
-                <p style={{ fontSize: 13, lineHeight: 1.7, color: '#7070a0', margin: 0 }}>{step.desc}</p>
+                <h3 style={{ fontWeight: 700, fontSize: 17, letterSpacing: '-0.02em', margin: '0 0 12px', color: 'var(--text-primary)' }}>{step.title}</h3>
+                <p style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--text-secondary)', margin: 0 }}>{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -452,13 +458,13 @@ const Home = () => {
           <div style={{
             position: 'absolute', top: -60, right: -60,
             width: 220, height: 220,
-            background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%)',
             pointerEvents: 'none',
           }} />
           <div style={{
             display: 'inline-block',
             background: 'var(--accent)',
-            color: 'var(--ink)',
+            color: 'var(--accent-fg)',
             fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
             letterSpacing: '0.2em', textTransform: 'uppercase',
             padding: '6px 18px',
@@ -467,10 +473,10 @@ const Home = () => {
           }}>
             Free to use
           </div>
-          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px' }}>
+          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px', color: 'var(--text-primary)' }}>
             Ready to explore<br />your first repo?
           </h2>
-          <p style={{ color: '#7878a0', fontSize: 15, maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.65 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 15, maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.65 }}>
             No setup. No config. Just paste a GitHub URL and start chatting with your code.
           </p>
           <Link to="/login" className="btn btn-primary" style={{ fontSize: 13, padding: '14px 36px' }}>
@@ -481,7 +487,7 @@ const Home = () => {
 
       {/* ── Footer ──────────────────────────────────────────── */}
       <footer style={{
-        borderTop: '3px solid rgba(255,255,255,0.06)',
+        borderTop: '3px solid var(--border)',
         padding: '28px 32px',
         display: 'flex',
         alignItems: 'center',
@@ -489,13 +495,13 @@ const Home = () => {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 26, height: 26, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--ink)' }}>
-            <Code2 size={13} color="var(--ink)" strokeWidth={2.8} />
+            <Code2 size={13} color="var(--accent-fg)" strokeWidth={2.8} />
           </div>
-          <span style={{ fontWeight: 700, fontSize: 13, color: '#6666880' }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-muted)' }}>
             CodebaseChat
           </span>
         </div>
-        <p style={{ fontSize: 11, color: '#44445a', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
+        <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
           Powered by LiteLLM · ChromaDB · BM25Plus · RRF
         </p>
       </footer>
