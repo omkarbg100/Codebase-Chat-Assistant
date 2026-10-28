@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, Code2, ChevronRight, Hash, Info } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
 const EXT_TO_LANG = {
   js: 'javascript', jsx: 'jsx', ts: 'typescript', tsx: 'tsx',
@@ -19,6 +20,7 @@ function detectLang(filePath) {
 
 const SourceViewer = ({ source, onClose }) => {
   const [copied, setCopied] = useState(false);
+  const { isDark } = useTheme();
 
   if (!source) return null;
 
@@ -48,20 +50,27 @@ const SourceViewer = ({ source, onClose }) => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 30 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#0a0a10' }}
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--code-bg)',
+        borderLeft: '3px solid var(--border)',
+        transition: 'background-color 0.2s ease, border-color 0.2s ease',
+      }}
     >
       {/* Header */}
       <div style={{
         padding: '12px 16px',
-        borderBottom: '3px solid rgba(255,255,255,0.07)',
+        borderBottom: '3px solid var(--border)',
         background: 'var(--surface)',
         display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
       }}>
         {/* Icon */}
         <div style={{
           width: 32, height: 32, flexShrink: 0,
-          background: 'rgba(56,189,248,0.10)',
-          border: '2px solid rgba(56,189,248,0.30)',
+          background: 'rgba(var(--accent-rgb), 0.10)',
+          border: '2px solid rgba(var(--accent-rgb), 0.30)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Code2 size={14} color="var(--accent)" strokeWidth={2.5} />
@@ -70,7 +79,7 @@ const SourceViewer = ({ source, onClose }) => {
         {/* File name + path */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <h4 style={{ margin: 0, fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <h4 style={{ margin: 0, fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-primary)' }}>
               {fileName}
             </h4>
             {(lines || (startLine && endLine)) && (
@@ -78,8 +87,8 @@ const SourceViewer = ({ source, onClose }) => {
                 display: 'inline-flex', alignItems: 'center', gap: 3,
                 fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
                 padding: '2px 7px',
-                background: 'rgba(56,189,248,0.12)',
-                border: '1.5px solid rgba(56,189,248,0.30)',
+                background: 'rgba(var(--accent-rgb), 0.12)',
+                border: '1.5px solid rgba(var(--accent-rgb), 0.30)',
                 color: 'var(--accent)',
                 flexShrink: 0,
               }}>
@@ -88,7 +97,7 @@ const SourceViewer = ({ source, onClose }) => {
               </span>
             )}
           </div>
-          <p style={{ margin: 0, fontSize: 10, color: '#55557a', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
+          <p style={{ margin: 0, fontSize: 10, color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
             {source.file_path}
           </p>
         </div>
@@ -101,11 +110,11 @@ const SourceViewer = ({ source, onClose }) => {
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '6px 10px',
-              border: copied ? '2px solid rgba(52,211,153,0.40)' : '2px solid rgba(255,255,255,0.10)',
-              background: copied ? 'rgba(52,211,153,0.08)' : 'transparent',
+              border: copied ? '2px solid var(--mint)' : '2px solid var(--border-strong)',
+              background: copied ? 'rgba(52,211,153,0.1)' : 'var(--surface-2)',
               cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: copied ? 'var(--mint)' : '#7878a0',
+              color: copied ? 'var(--mint)' : 'var(--text-secondary)',
               transition: 'all 0.15s',
             }}
           >
@@ -118,14 +127,14 @@ const SourceViewer = ({ source, onClose }) => {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28,
-              border: '2px solid rgba(255,255,255,0.08)',
+              border: '2px solid var(--border)',
               background: 'transparent',
               cursor: 'pointer',
-              color: '#555570',
+              color: 'var(--text-subtle)',
               transition: 'all 0.12s',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,92,77,0.12)'; e.currentTarget.style.color = 'var(--coral)'; e.currentTarget.style.borderColor = 'rgba(255,92,77,0.30)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#555570'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-subtle)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
             <X size={13} strokeWidth={2.5} />
           </button>
@@ -136,28 +145,28 @@ const SourceViewer = ({ source, onClose }) => {
       {hasScores && (
         <div style={{
           padding: '8px 16px',
-          borderBottom: '2px solid rgba(255,255,255,0.05)',
-          background: 'rgba(56,189,248,0.04)',
+          borderBottom: '2px solid var(--border-subtle)',
+          background: 'rgba(var(--accent-rgb), 0.04)',
           display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <Info size={10} color="#44446a" strokeWidth={2.3} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#44446a', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+            <Info size={10} color="var(--text-subtle)" strokeWidth={2.3} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-subtle)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
               Retrieval
             </span>
           </div>
           {denseRank != null && (
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#9898b0' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-secondary)' }}>
               Dense <span style={{ color: 'var(--cyan)', fontWeight: 700 }}>#{denseRank}</span>
             </span>
           )}
           {sparseRank != null && (
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#9898b0' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-secondary)' }}>
               Sparse <span style={{ color: 'var(--violet-light)', fontWeight: 700 }}>#{sparseRank}</span>
             </span>
           )}
           {rrfScore != null && (
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#9898b0' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-secondary)' }}>
               RRF <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{Number(rrfScore).toFixed(5)}</span>
             </span>
           )}
@@ -168,7 +177,7 @@ const SourceViewer = ({ source, onClose }) => {
       <div style={{ flex: 1, overflowY: 'auto' }}>
         <SyntaxHighlighter
           language={language}
-          style={vscDarkPlus}
+          style={isDark ? vscDarkPlus : vs}
           showLineNumbers
           customStyle={{
             margin: 0, padding: '20px 0',
@@ -177,8 +186,8 @@ const SourceViewer = ({ source, onClose }) => {
           }}
           lineNumberStyle={{
             minWidth: '3.5em', paddingRight: '1.2em',
-            color: '#33334a', fontFamily: 'var(--font-mono)',
-            borderRight: '2px solid rgba(255,255,255,0.05)',
+            color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)',
+            borderRight: '2px solid var(--border-subtle)',
             marginRight: '1em',
           }}
           wrapLines
@@ -188,7 +197,7 @@ const SourceViewer = ({ source, onClose }) => {
               : false;
             return {
               style: isHighlighted
-                ? { background: 'rgba(56,189,248,0.08)', borderLeft: '3px solid var(--accent)', paddingLeft: 12 }
+                ? { background: 'rgba(var(--accent-rgb), 0.10)', borderLeft: '3px solid var(--accent)', paddingLeft: 12 }
                 : {},
             };
           }}
@@ -200,15 +209,15 @@ const SourceViewer = ({ source, onClose }) => {
       {/* Footer */}
       <div style={{
         padding: '8px 16px',
-        borderTop: '2px solid rgba(255,255,255,0.06)',
+        borderTop: '2px solid var(--border)',
         background: 'var(--surface)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         flexShrink: 0,
       }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#3a3a5a', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-subtle)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
           {language.toUpperCase()}
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#3a3a5a', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-subtle)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
           Hybrid Match · RRF Ranked
         </span>
       </div>

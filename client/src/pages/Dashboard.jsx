@@ -33,8 +33,10 @@ const Dashboard = () => {
     <div style={{
       display: 'flex', height: '100vh',
       background: 'var(--bg)',
+      color: 'var(--text-primary)',
       overflow: 'hidden',
       fontFamily: 'var(--font-sans)',
+      transition: 'background-color 0.2s ease, color 0.2s ease',
     }}>
       {/* Sidebar */}
       <Sidebar
@@ -51,7 +53,7 @@ const Dashboard = () => {
           flex: activeSource ? '0 0 55%' : '1',
           overflow: 'hidden',
           transition: 'flex 0.3s ease',
-          borderRight: activeSource ? '3px solid rgba(255,255,255,0.07)' : 'none',
+          borderRight: activeSource ? '3px solid var(--border)' : 'none',
         }}>
           <ChatWindow
             selectedRepo={selectedRepo}

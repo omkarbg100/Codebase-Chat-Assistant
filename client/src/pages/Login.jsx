@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, Loader2, Mail, Lock, User as UserIcon, Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -34,16 +35,17 @@ const Login = () => {
   const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', transition: 'background-color 0.2s ease' }}>
 
       {/* Nav bar */}
-      <nav style={{ padding: '16px 32px', borderBottom: '2px solid rgba(255,255,255,0.06)' }}>
+      <nav style={{ padding: '16px 32px', borderBottom: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <ArrowLeft size={14} color="#7878a0" strokeWidth={2.5} />
-          <span style={{ fontSize: 12, color: '#7878a0', fontWeight: 600, letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
+          <ArrowLeft size={14} color="var(--text-secondary)" strokeWidth={2.5} />
+          <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
             Back to Home
           </span>
         </Link>
+        <ThemeToggle id="login-nav-theme-toggle" />
       </nav>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
@@ -57,13 +59,14 @@ const Login = () => {
           {/* Card */}
           <div style={{
             background: 'var(--surface)',
-            border: '3px solid rgba(255,255,255,0.10)',
+            border: '3px solid var(--border-strong)',
             boxShadow: '8px 8px 0 var(--accent)',
+            transition: 'background-color 0.2s ease, border-color 0.2s ease',
           }}>
             {/* Header */}
             <div style={{
               background: 'var(--accent)',
-              borderBottom: '3px solid rgba(0,0,0,0.15)',
+              borderBottom: '3px solid var(--ink)',
               padding: '24px 28px 20px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
@@ -74,19 +77,19 @@ const Login = () => {
                 }}>
                   <Code2 size={17} color="var(--accent)" strokeWidth={2.8} />
                 </div>
-                <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
-                  Codebase<span style={{ color: 'var(--violet)' }}>Chat</span>
+                <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--accent-fg)', letterSpacing: '-0.02em' }}>
+                  Codebase<span style={{ opacity: 0.9 }}>Chat</span>
                 </span>
               </div>
               <h1 style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: 26, fontWeight: 800,
                 letterSpacing: '-0.04em', lineHeight: 1.1,
-                color: 'var(--ink)', margin: 0,
+                color: 'var(--accent-fg)', margin: 0,
               }}>
                 {isRegister ? 'Create Account' : 'Welcome Back'}
               </h1>
-              <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginTop: 6 }}>
+              <p style={{ fontSize: 13, color: 'var(--accent-fg)', opacity: 0.85, marginTop: 6 }}>
                 {isRegister ? 'Start exploring any GitHub repo with AI.' : 'Sign in to access your indexed repositories.'}
               </p>
             </div>
@@ -120,11 +123,11 @@ const Login = () => {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                   >
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
                       Username
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <UserIcon size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                      <UserIcon size={15} strokeWidth={2.3} color="var(--text-subtle)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                       <input
                         id="username"
                         type="text"
@@ -140,11 +143,11 @@ const Login = () => {
                 )}
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
                     Email Address
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Mail size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <Mail size={15} strokeWidth={2.3} color="var(--text-subtle)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       id="email"
                       type="email"
@@ -159,11 +162,11 @@ const Login = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7878a0', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>
                     Password
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Lock size={15} strokeWidth={2.3} color="#505068" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <Lock size={15} strokeWidth={2.3} color="var(--text-subtle)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
@@ -177,7 +180,7 @@ const Login = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(v => !v)}
-                      style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#505068', padding: 4 }}
+                      style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', padding: 4 }}
                     >
                       {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -205,9 +208,9 @@ const Login = () => {
               <div style={{
                 marginTop: 22,
                 paddingTop: 18,
-                borderTop: '2px solid rgba(255,255,255,0.06)',
+                borderTop: '2px solid var(--border)',
                 textAlign: 'center',
-                fontSize: 13, color: '#5a5a78',
+                fontSize: 13, color: 'var(--text-muted)',
               }}>
                 {isRegister ? 'Already have an account? ' : "Don't have an account? "}
                 <button
@@ -220,7 +223,7 @@ const Login = () => {
             </div>
           </div>
 
-          <p style={{ textAlign: 'center', marginTop: 20, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: '#44445a', textTransform: 'uppercase' }}>
+          <p style={{ textAlign: 'center', marginTop: 20, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>
             Secured · JWT Auth · No data shared
           </p>
         </motion.div>

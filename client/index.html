@@ -10,9 +10,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('codebase_chat_theme');
+          var theme = saved === 'light' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+          if (theme === 'light') {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#0d0d12' : '#f8fafc');
+        } catch (e) {}
+      })();
+    </script>
     <style>
       * { box-sizing: border-box; }
-      body { margin: 0; background-color: #0d0d12; overflow-x: hidden; }
+      body { margin: 0; background-color: var(--bg, #0d0d12); color: var(--text-primary, #e2e2ef); overflow-x: hidden; }
     </style>
   </head>
   <body>
