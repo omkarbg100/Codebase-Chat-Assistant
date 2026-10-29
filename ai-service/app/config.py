@@ -19,13 +19,18 @@ class Settings:
     # LLM Provider settings (LiteLLM)
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    
-    # Active LLM provider: 'gemini', 'groq', or 'auto' (fails over between both)
-    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "gemini").lower()
-    
+
+    # Active LLM provider: 'gemini' | 'groq' | 'ollama' | 'auto'
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama").lower()
+
     # Models supported via LiteLLM
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini/gemini-2.5-flash")
     GROQ_MODEL: str = os.getenv("GROQ_MODEL", "groq/llama-3.3-70b-versatile")
+
+    # Ollama local model settings (LiteLLM prefix: 'ollama/')
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "ollama/llama3.2")
+
     LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.2"))
 
     # Vector store & Database settings

@@ -135,5 +135,7 @@ async def model_info():
         active_model=llm.model,
         fallback_model=llm.fallback_model,
         gemini_configured=bool(settings.GOOGLE_API_KEY),
-        groq_configured=bool(settings.GROQ_API_KEY)
+        groq_configured=bool(settings.GROQ_API_KEY),
+        ollama_configured=True,  # always available for local; actual reachability depends on server
+        ollama_base_url=settings.OLLAMA_BASE_URL,
     )

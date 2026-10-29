@@ -1,13 +1,14 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from app.core.llm import ChatLiteLLM, get_llm
+from app.core.llm import ChatLiteLLM, get_llm, LLMUsageCallback
 from app.core.rag_pipeline import get_rag_chain
 from langchain_core.documents import Document
+import litellm
 
 
 def test_message_conversion():
-    llm = ChatLiteLLM(model="gemini/gemini-2.5-flash")
+    llm = ChatLiteLLM(model="ollama/llama3.2")
     messages = [
         SystemMessage(content="System instruction"),
         HumanMessage(content="User query"),
@@ -18,6 +19,17 @@ def test_message_conversion():
     assert converted[0] == {"role": "system", "content": "System instruction"}
     assert converted[1] == {"role": "user", "content": "User query"}
     assert converted[2] == {"role": "assistant", "content": "Assistant response"}
+
+
+def test_ollama_provider_configuration():
+    with patch("app.config.settings.LLM_PROVIDER", "ollama"), \
+         patch("app.config.settings.OLLAMA_MODEL", "ollama/llama3.2"), \
+         patch("app.config.settings.OLLAMA_BASE_URL", "http://localhost:11434"):
+
+        llm = get_llm(provider="ollama")
+        assert "ollama" in llm.model
+        assert llm.api_base == "http://localhost:11434"
+        assert llm.fallback_model is None  # no cloud fallback in local-only mode
 
 
 def test_gemini_provider_configuration():
@@ -42,6 +54,33 @@ def test_groq_provider_configuration():
         assert "gemini" in llm.fallback_model
 
 
+def test_litellm_callback_registered():
+    """Verify LLMUsageCallback is registered in litellm.callbacks."""
+    assert any(isinstance(cb, LLMUsageCallback) for cb in litellm.callbacks), \
+        "LLMUsageCallback should be registered in litellm.callbacks on module import"
+
+
+def test_callback_logs_success(caplog):
+    """Verify LLMUsageCallback.log_success_event emits a log line."""
+    import logging
+    callback = LLMUsageCallback()
+    mock_response = MagicMock()
+    mock_response.usage.prompt_tokens = 10
+    mock_response.usage.completion_tokens = 20
+    mock_response.usage.total_tokens = 30
+
+    with caplog.at_level(logging.INFO, logger="core.llm"):
+        callback.log_success_event(
+            kwargs={"model": "ollama/llama3.2"},
+            response_obj=mock_response,
+            start_time=0.0,
+            end_time=0.5,
+        )
+
+    assert any("Success" in r.message for r in caplog.records)
+    assert any("ollama/llama3.2" in r.message for r in caplog.records)
+
+
 def test_automatic_failover_to_fallback():
     """Verify that when primary model raises an exception, LiteLLM falls over to fallback."""
     llm = ChatLiteLLM(
@@ -64,7 +103,7 @@ def test_automatic_failover_to_fallback():
 
 @pytest.mark.anyio
 async def test_async_completion_with_litellm():
-    llm = ChatLiteLLM(model="gemini/gemini-2.5-flash")
+    llm = ChatLiteLLM(model="ollama/llama3.2", api_base="http://localhost:11434")
     mock_resp = MagicMock()
     mock_resp.choices = [MagicMock(message=MagicMock(content="Async response"))]
 
@@ -80,8 +119,7 @@ def test_rag_pipeline_with_litellm():
         Document(page_content="def authenticate(): pass", metadata={"file_path": "auth.py"})
     ]
 
-
-    llm = ChatLiteLLM(model="gemini/gemini-2.5-flash")
+    llm = ChatLiteLLM(model="ollama/llama3.2", api_base="http://localhost:11434")
     chain = get_rag_chain(mock_retriever, llm=llm)
 
     mock_resp = MagicMock()

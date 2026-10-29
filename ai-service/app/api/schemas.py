@@ -55,3 +55,5 @@ class ModelInfoResponse(BaseModel):
     fallback_model: Optional[str]
     gemini_configured: bool
     groq_configured: bool
+    ollama_configured: bool
+    ollama_base_url: Optional[str] = None
