@@ -45,7 +45,7 @@ def get_rag_chain(vector_store_or_retriever: Any, llm: Optional[Any] = None):
         "Instructions:\n"
         "1. Use provided context to answer accurately.\n"
         "2. State clearly if information is missing.\n"
-        "3. Reference file names and include snippets if helpful.\n\n"
+        "3. Reference exact file paths and line numbers (e.g., path/file.py (Lines 10-20)) when using context.\n\n"
         "Context:\n{context}"
     )
 

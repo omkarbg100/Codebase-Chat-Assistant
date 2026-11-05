@@ -38,11 +38,12 @@ const SourceViewer = ({ source, onClose }) => {
   const startLine = source.start_line;
   const endLine = source.end_line;
 
-  // Score info
-  const hasScores = source.rrf_score != null;
-  const denseRank = source.dense_rank;
-  const sparseRank = source.sparse_rank;
-  const rrfScore = source.rrf_score;
+  // Score info (stored under retrieval_metadata by the API)
+  const retrievalMetadata = source.retrieval_metadata || {};
+  const hasScores = retrievalMetadata.rrf_score != null;
+  const denseRank = retrievalMetadata.dense_rank;
+  const sparseRank = retrievalMetadata.sparse_rank;
+  const rrfScore = retrievalMetadata.rrf_score;
 
   return (
     <motion.div
@@ -178,6 +179,7 @@ const SourceViewer = ({ source, onClose }) => {
         <SyntaxHighlighter
           language={language}
           style={isDark ? vscDarkPlus : vs}
+          startingLineNumber={startLine || 1}
           showLineNumbers
           customStyle={{
             margin: 0, padding: '20px 0',

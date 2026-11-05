@@ -89,13 +89,17 @@ async def ask_endpoint(request: QueryRequest):
         sources: list[SourceDocument] = []
         for doc in docs:
             meta = doc.metadata or {}
+            start_line = meta.get("start_line")
+            end_line = meta.get("end_line")
+            lines = f"{start_line}-{end_line}" if start_line and end_line else None
             sources.append(SourceDocument(
                 file_path=meta.get("file_path"),
                 language=meta.get("language"),
                 content=doc.page_content,
+                lines=lines,
                 chunk_id=meta.get("chunk_id"),
-                start_line=meta.get("start_line"),
-                end_line=meta.get("end_line"),
+                start_line=start_line,
+                end_line=end_line,
                 retrieval_metadata=meta.get("retrieval_metadata")
             ))
 
