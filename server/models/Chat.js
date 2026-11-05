@@ -11,7 +11,12 @@ const chatSchema = new mongoose.Schema({
         {
           file_path: String,
           language: String,
-          content: String
+          content: String,
+          chunk_id: Number,
+          lines: String,
+          start_line: Number,
+          end_line: Number,
+          retrieval_metadata: mongoose.Schema.Types.Mixed
         }
       ],
       timestamp: { type: Date, default: Date.now }

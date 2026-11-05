@@ -341,6 +341,7 @@ const ChatWindow = ({ selectedRepo, onViewSource, activeSourceId }) => {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {msg.sources.map((src, idx) => {
                       const isActive = activeSourceId === src.file_path;
+                      const lineLabel = src.lines || (src.start_line && src.end_line ? `${src.start_line}–${src.end_line}` : null);
                       return (
                         <button
                           key={idx}
@@ -361,8 +362,8 @@ const ChatWindow = ({ selectedRepo, onViewSource, activeSourceId }) => {
                         >
                           <FileText size={9} strokeWidth={2.5} />
                           {src.file_path?.split('/').pop()}
-                          {src.lines && (
-                            <span style={{ opacity: 0.65 }}>:{src.lines}</span>
+                          {lineLabel && (
+                            <span style={{ opacity: 0.65 }}>:{lineLabel}</span>
                           )}
                         </button>
                       );
