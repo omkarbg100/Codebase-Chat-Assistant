@@ -1,15 +1,10 @@
 fastapi
 uvicorn
 langchain
-langchain-google-genai
 chromadb
-gitpython
 python-dotenv
 pydantic
 requests
-python-multipart
-google-generativeai
-tiktoken
 langchain_text_splitters
 langchain_chroma
 langchain_huggingface
