@@ -369,12 +369,3 @@ A CI/CD pipeline is configured in `.github/workflows/deploy.yml`. On every push 
 2. **Deploy Job**: Connects via SSH to your host VM, writes the environment secrets, pulls the newly built images, and executes `docker compose up -d --remove-orphans`.
 
 ---
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Run the AI service test suite (`pytest -v tests/`)
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
